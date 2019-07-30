@@ -105,8 +105,8 @@ namespace oxygine
 
         bool _continueDownload;
 
-        size_t _expectedContentSize;
-        size_t _receivedContentSize;
+        unsigned int _expectedContentSize = 0;
+        unsigned int _receivedContentSize = 0;
         file::handle _fhandle;
         bool _suitableResponse;
         responseCodeChecker _responseCodeChecker;
