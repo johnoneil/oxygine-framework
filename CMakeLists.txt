@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (OXYGINE)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(OX_HAVE_LIBJPEG 0)
 set(OX_HAVE_LIBPNG 0)
@@ -76,6 +77,10 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	
 	set(OX_HAVE_LIBJPEG 1)
 	set(OX_HAVE_LIBPNG 1)
+	set(OX_HAVE_LIBCURL 1)
+	set(OX_HAVE_HTTP 1)
+
+	set(CORE_LIBS ${CORE_LIBS} curl)
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 elseif(MSVC)
@@ -152,9 +157,9 @@ endif(FORCE_GLES)
 
 
 set(CORE_LIBS 
-	${CORE_LIBS}
 	oxygine-framework	
-	${OPENGL_LIBRARIES}		
+	${OPENGL_LIBRARIES}
+	${CORE_LIBS}
 )
 
 
