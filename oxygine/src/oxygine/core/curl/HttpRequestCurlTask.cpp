@@ -229,8 +229,13 @@ namespace oxygine
         curl_easy_setopt(_easy, CURLOPT_HEADERDATA, this);
 
 
-        curl_easy_setopt(_easy, CURLOPT_NOPROGRESS, 0);
-
+        
+        #ifndef OX_DEBUG
+        curl_easy_setopt(_easy, CURLOPT_VERBOSE, 0L);
+        curl_easy_setopt(_easy, CURLOPT_NOPROGRESS, true);
+        #else
+        curl_easy_setopt(_easy, CURLOPT_NOPROGRESS, false);
+        #endif
 
         curl_easy_setopt(_easy, CURLOPT_FOLLOWLOCATION, true);
 
