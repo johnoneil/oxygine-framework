@@ -328,13 +328,13 @@ namespace oxygine
         {
             oxglActiveTexture(GL_TEXTURE7);
             glBindTexture(GL_TEXTURE_2D, (GLuint) _id);
-            GLenum er = glGetError();
+            checkGLError();
 
             ImageData src = ImageData(_width, _height, (int)(_data.size() / _height), _format, &_data.front());
             ImageData locked = src.getRect(_lockRect);
 
             //glPixelStorei (GL_UNPACK_ALIGNMENT,  1);//byte align
-            er = glGetError();
+            checkGLError();
 
             //todo add EXT_unpack_subimage support
 
@@ -352,7 +352,7 @@ namespace oxygine
                             _lockRect.getX(), _lockRect.getY(), _lockRect.getWidth(), _lockRect.getHeight(),
                             glp.format, glp.type, locked.data);
 
-            er = glGetError();
+            checkGLError();
 
             _lockFlags = 0;
         }
