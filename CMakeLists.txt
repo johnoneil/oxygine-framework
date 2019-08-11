@@ -23,9 +23,10 @@ else(WIN32)
 
 	if (SDL2_INCLUDE_DIRS)		
 		set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS}/SDL2)
-		message(STATUS "found")		
+		message(STATUS "SDL found!")
 	else()
-		message(STATUS "SDL not found")
+		message(STATUS "SDL not found!")
+		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDL SDL)
 		set(SDL2_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../SDL/include)					
 	endif()
 
@@ -165,7 +166,8 @@ set(CORE_LIBS
 
 if (OX_USE_SDL2)
 	set(CORE_LIBS ${CORE_LIBS}
-		SDL2main SDL2)
+		SDL2
+		SDL2main )
 	set(OXYGINE_INCLUDE_DIRS ${OXYGINE_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS})
 endif(OX_USE_SDL2)	
 
