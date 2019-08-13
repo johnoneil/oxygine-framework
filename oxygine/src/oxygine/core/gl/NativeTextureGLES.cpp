@@ -86,6 +86,13 @@ namespace oxygine
                 pixel.type = 0;
                 pixel.compressed = true;
                 break;
+	    #if defined(OX_USE_DXT)
+            case TF_DXT5:
+                pixel.format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+                pixel.type = 0;
+                pixel.compressed = true;
+                break;
+	    #endif
             default:
                 logs::error("unknown format: %d\n", format);
                 OX_ASSERT(!"unknown format");

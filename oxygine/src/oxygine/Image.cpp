@@ -123,6 +123,10 @@ namespace oxygine
             return IT_PVR;
         if (data[0] == 0 && data[1] == 0 && data[2] == 2)
             return IT_TGA;
+	#if defined(OX_USE_DXT)
+        if (data[0] == 'D' && data[1] == 'D' && data[2] == 'S')
+            return IT_DDS;
+	#endif
 
         if ((&dt)[11] == 0x21525650)
             return IT_PVR2;
@@ -264,7 +268,11 @@ namespace oxygine
 
         TextureFormat destFormat = format;
         if (destFormat == TF_UNDEFINED)
+        #if defined(OX_FORCE_R5G5B5A1)
+            destFormat = TF_R5G5B5A1;
+        #else
             destFormat = TF_R8G8B8A8;
+        #endif
 
         mt.init(copy_width, copy_rows, destFormat);
         ImageData dest = mt.lock();
@@ -725,7 +733,68 @@ namespace oxygine
                     break;
                 }
                 break;
+		#if defined(OX_USE_DXT)
+                case IT_DDS:
+                {
+                    // After: https://gist.github.com/tilkinsc/d1a8a46853dea160dc86aa48618be6f9
+                    // After: https://gist.github.com/tilkinsc/13191c0c1e5d6b25fbe79bbd2288a673
+                    static const size_t DDS_HEADER_SIZE = 128;
+                    const unsigned char* header = static_cast<const unsigned char*>(buffer.getData());
 
+                    #if 0
+		    // In some cases width and height seem swapped...
+                    const unsigned int height = (header[12]) | (header[13] << 8) | (header[14] << 16) | (header[15] << 24);
+                    const unsigned int width = (header[16]) | (header[17] << 8) | (header[18] << 16) | (header[19] << 24);
+                    #else
+                    const unsigned int width = (header[12]) | (header[13] << 8) | (header[14] << 16) | (header[15] << 24);
+                    const unsigned int height = (header[16]) | (header[17] << 8) | (header[18] << 16) | (header[19] << 24);
+                    #endif
+                    const unsigned int linearSize = (header[20]) | (header[21] << 8) | (header[22] << 16) | (header[23] << 24);
+                    const unsigned int mipMapCount = (header[28]) | (header[29] << 8) | (header[30] << 16) | (header[31] << 24);
+                    
+                    // 'the sum of all the mipmap's byte-size' is never greater than 'two times the biggest mipmap byte-size'
+                    unsigned int buffer_size = (mipMapCount > 1 ? linearSize + linearSize : linearSize);
+
+                    unsigned int blockSize = 0;
+                    if(header[84] == 'D') {
+                        switch(header[87]) {
+                            #if 0
+                            case '1': // DXT1
+                                blockSize = 8;
+                                break;
+                            case '3': // DXT3
+                                format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+                                blockSize = 16;
+                                break;
+                            case '0': // DX10
+                                break;
+                            #endif
+                            case '5': // DXT5
+                                _image.format = TF_DXT5;
+                                blockSize = 16;
+                                break;
+                            default:
+                                // unsupported
+                                return false;
+                        }
+                    }else{
+                        // unsupported
+                        return false;
+                    }
+
+                    // Only support 0 mip levels
+                    unsigned int offset = DDS_HEADER_SIZE;
+		            unsigned int size = ((width+3)/4) * ((height+3)/4) * blockSize;
+                    _image.w = width;
+                    _image.h = height;
+                    _offset = offset;
+                    _image.pitch = size / _image.h; // bytes per horizontal line
+                    _buffer.swap(buffer.data);
+
+                    return true;
+                }
+                break;
+		#endif
                 case IT_UNKNOWN:
                 {
                     if (_loadCustomImage(*this, (void*)buffer.getData(), buffer.getSize(), premultiplied, format))

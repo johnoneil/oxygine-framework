@@ -33,6 +33,9 @@ namespace oxygine
             case TF_PVRTCII_4:
             case TF_ETC1:
             case TF_ETC2:
+	    #if defined(OX_USE_DXT)
+            case TF_DXT5:
+	    #endif
                 return 0;
             case TF_UNDEFINED:
                 return 0;
@@ -54,6 +57,9 @@ namespace oxygine
             case TF_PVRTCII_4:
             case TF_ETC1:
             case TF_ETC2:
+	    #if defined(OX_USE_DXT)
+            case TF_DXT5:
+	    #endif
                 return true;
             default:
                 break;
@@ -80,6 +86,9 @@ namespace oxygine
         CMP(PVRTCII_4, 0);
         CMP(ETC1, 0);
         CMP(ETC2, 0);
+	#if defined(OX_USE_DXT)
+        CMP(DXT5, 0);
+	#endif
 #undef  CMP
         OX_ASSERT(!"string2TextureFormat undefined format");
         return TF_UNDEFINED;
@@ -121,6 +130,10 @@ namespace oxygine
                 return "ETC1";
             case TF_ETC2:
                 return "ETC2";
+	    #if defined(OX_USE_DXT)
+            case TF_DXT5:
+                return "DXT5";
+	    #endif
             case TF_UNDEFINED:
                 return "undefined";
             default:

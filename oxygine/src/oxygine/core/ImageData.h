@@ -26,6 +26,9 @@ namespace oxygine
         TF_PVRTCII_4,
         TF_ETC1,
         TF_ETC2,
+	#if defined(OX_USE_DXT)
+        TF_DXT5
+	#endif
     };
 
 #define ALL_FORMATS_SWITCH(format) \

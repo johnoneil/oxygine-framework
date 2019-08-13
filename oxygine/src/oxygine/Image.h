@@ -14,6 +14,9 @@ namespace oxygine
         IT_PVR,
         IT_TGA,
         IT_JPEG
+	#if defined(OX_USE_DXT)        
+	,IT_DDS
+	#endif
     };
 
     bool getImageInfo(const void* data, size_t size, const char* name, ImageType& type, int& width, int& height);
