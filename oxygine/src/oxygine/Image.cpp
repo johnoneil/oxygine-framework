@@ -755,6 +755,8 @@ namespace oxygine
     {
         int bytesPerPixel = getBytesPerPixel(Format);
         int size = h * w * bytesPerPixel;
+        // Resize is fairly expensive when just initializing a buffer as it constructs each element as well.
+        // Would be better to change _buffer into a more simply maintainted array
         _buffer.resize(size);
         _image = ImageData(w, h, w * bytesPerPixel, Format, size ? &_buffer.front() : 0);
     }

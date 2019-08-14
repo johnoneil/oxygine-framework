@@ -63,7 +63,69 @@ namespace oxygine
     private:
         ImageData _image;
         size_t _offset;//buffer offset
+        #if 1
+        struct Buffer
+        {
+            unsigned char* _buffer = 0;
+            size_t _sz = 0;
+            size_t size() const { return _sz;}
+
+            void reserve(size_t sz)
+            {
+                _sz = sz;
+                if(_buffer) delete [] _buffer;
+                _buffer = new unsigned char[_sz];
+            }
+            ~Buffer()
+            {
+                if(_buffer) delete [] _buffer;
+                _buffer = 0;
+                _sz = 0;
+            }
+            void clear()
+            {
+                _sz = 0;
+                if(_buffer)
+                {
+                    delete [] _buffer;
+                    _buffer = 0;
+                }
+            }
+            bool empty() const {return _sz == 0;}
+            unsigned char& front() const {return _buffer[0];};
+            void swap (std::vector<unsigned char>& x)
+            {
+                std::vector<unsigned char> tmp;
+                x.swap(tmp);
+                x.resize(_sz);
+                for(int i=0;i<_sz;++i)
+                {
+                    x[i] = _buffer[i];
+                }
+                delete [] _buffer;
+                _sz = tmp.size();
+                _buffer = new unsigned char[_sz];
+                for(int i=0;i<tmp.size();++i)
+                {
+                    _buffer[i] = tmp[i];
+                }
+            }
+            void resize(size_t sz)
+            {
+                _sz = sz;
+                if(_buffer)
+                {
+                    delete [] _buffer;
+                    _buffer = 0;
+                }
+                _buffer = new unsigned char[sz];
+            }
+
+        };
+        Buffer _buffer;
+        #else
         std::vector<unsigned char> _buffer;
+        #endif
     };
 
     typedef bool (*cbLoadImageFromBuffer)(Image& mt, void* data, int nSize, bool premultiplied, TextureFormat format);
